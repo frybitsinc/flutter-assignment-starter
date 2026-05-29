@@ -37,3 +37,13 @@ flutter:
           weight: 600
         - asset: assets/fonts/Pretendard-Bold.otf
           weight: 700
+    - family: PixelifySans
+      fonts:
+        - asset: assets/fonts/PixelifySans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/PixelifySans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/PixelifySans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/PixelifySans-Bold.ttf
+          weight: 700

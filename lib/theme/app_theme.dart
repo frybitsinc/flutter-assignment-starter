@@ -104,6 +104,7 @@ class _AppColorsGrays {
 
 class AppFonts {
   static const pretendard = 'Pretendard';
+  static const pixelifySans = 'PixelifySans';
 }
 
 const _tabularFigures = <FontFeature>[FontFeature.tabularFigures()];
