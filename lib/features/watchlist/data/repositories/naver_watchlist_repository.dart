@@ -418,6 +418,8 @@ class NaverWatchlistRepository implements WatchlistRepository {
     );
   }
 
+  /// - When requestedAsOf is null, use the latest historical row for each symbol.
+  /// - When requestedAsOf is provided, resolve the selected trading day and build a one-day snapshot for that date.
   DateTime _resolveAsOf(
     List<DateTime> availableDates,
     DateTime? requestedAsOf,
