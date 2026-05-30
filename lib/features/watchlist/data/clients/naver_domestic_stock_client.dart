@@ -102,9 +102,24 @@ class NaverDomesticStockClient implements NaverStockDataClient {
     // Related tests:
     // - test/features/watchlist/data/naver_stock_dtos_test.dart
     // - test/features/watchlist/data/naver_watchlist_repository_test.dart
-    throw UnimplementedError(
-      'TODO(assignment): implement NaverDomesticStockClient.searchStocks',
+    // throw UnimplementedError(
+    //   'TODO(assignment): implement NaverDomesticStockClient.searchStocks',
+    // );
+    final response = await _dio.get(
+      'https://ac.stock.naver.com/ac',
+      queryParameters: {
+        'q': query,
+        'target': 'stock,ipo,index,marketindicator',
+      },
+      options: Options(
+        headers: _defaultHeaders,
+        responseType: ResponseType.plain,
+      ),
     );
+    return _decodeJsonObjectBody(
+      response.data,
+      'searchStocks',
+    )['items'].map((e) => NaverAutocompleteItemDto.fromJson(e)).toList();
   }
 
   @override
