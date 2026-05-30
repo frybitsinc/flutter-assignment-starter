@@ -40,6 +40,15 @@ class NaverAutocompleteItemDto {
       url.contains('/domestic/stock/');
 }
 
+/// Naver keys used by the solution:
+/// - cd: symbol
+/// - nv: current price
+/// - pcv: previous close
+/// - ov: open price
+/// - hv: high price
+/// - lv: low price
+/// - aq: accumulated trading volume
+/// - countOfListedStock: listed share count (optional)
 class NaverRealtimeQuoteDto {
   const NaverRealtimeQuoteDto({
     required this.symbol,
@@ -53,19 +62,15 @@ class NaverRealtimeQuoteDto {
   });
 
   factory NaverRealtimeQuoteDto.fromJson(Map<String, dynamic> json) {
-    // TODO(assignment): Map the realtime quote payload into this DTO.
-    //
-    // Naver keys used by the solution:
-    // - cd: symbol
-    // - nv: current price
-    // - pcv: previous close
-    // - ov: open price
-    // - hv: high price
-    // - lv: low price
-    // - aq: accumulated trading volume
-    // - countOfListedStock: listed share count (optional)
-    throw UnimplementedError(
-      'TODO(assignment): implement NaverRealtimeQuoteDto.fromJson',
+    return NaverRealtimeQuoteDto(
+      symbol: _readString(json['cd']),
+      currentPrice: _readDouble(json['nv']),
+      previousClose: _readDouble(json['pcv']),
+      openPrice: _readDouble(json['ov']),
+      highPrice: _readDouble(json['hv']),
+      lowPrice: _readDouble(json['lv']),
+      accumulatedTradingVolume: _readInt(json['aq']),
+      countOfListedStock: _readInt(json['countOfListedStock']),
     );
   }
 
