@@ -38,39 +38,100 @@ class NaverWatchlistRepository implements WatchlistRepository {
   Set<String>? _favoriteIdsCache;
   List<DateTime>? _availableDatesCache;
 
+  /// Build the watchlist snapshot from Naver data.
+  /// - Related tests: test/features/watchlist/data/naver_watchlist_repository_test.dart
   @override
   Future<WatchlistSnapshot> fetchWatchlist({DateTime? asOf}) async {
-    // TODO(assignment): Build the watchlist snapshot from Naver data.
-    //
-    // Suggested flow:
-    // 1. Load canonical favorite ids via loadFavoriteIds().
-    // 2. Convert each id into a six-digit domestic symbol.
-    // 3. Load metadata and realtime quotes for those symbols.
-    // 4. When asOf is null, use the latest historical row for each symbol.
-    // 5. When asOf is provided, resolve the selected trading day and build a
-    //    one-day snapshot for that date.
-    // 6. Map every symbol into WatchlistItem.
-    //
-    // Related tests:
-    // - test/features/watchlist/data/naver_watchlist_repository_test.dart
-    throw UnimplementedError(
-      'TODO(assignment): implement NaverWatchlistRepository.fetchWatchlist',
+    // Load canonical favorite ids via loadFavoriteIds().
+    final favoriteIds = await loadFavoriteIds();
+    // Convert each id into a six-digit domestic symbol.
+    final symbols = favoriteIds
+        .map((e) => domesticSymbolFromFavoriteId(e))
+        .whereType<String>()
+        .toList();
+    // Load availableDates.
+    final availableDates = await fetchAvailableDates();
+    final latestDate = availableDates.isEmpty
+        ? normalizeAsOfDate(asOf ?? DateTime.now())
+        : availableDates.first;
+    final resolvedAsOf = _resolveAsOf(availableDates, asOf);
+    // Early return an empty snapshot if there are no symbols.
+    if (symbols.isEmpty) {
+      return WatchlistSnapshot(
+        asOf: resolvedAsOf,
+        items: const [],
+        availableDates: availableDates,
+      );
+    }
+    // Load metadata and realtime quotes for those symbols.
+    final metadata = await _loadMetadataBatch(symbols);
+    final quotes = await _loadRealtimeQuotes(symbols);
+    // Map every symbol into WatchlistItem.
+    final items = <WatchlistItem>[];
+    for (final symbol in symbols) {
+      // Latest day → first row on page 1 (+ realtime in _buildWatchlistItem)
+      // Historical day → row for that date (+ previous close for changeRate)
+      final entry = resolvedAsOf == latestDate
+          ? await _loadLatestHistoricalEntry(symbol)
+          : await _loadHistoricalEntryForDate(
+              symbol: symbol,
+              availableDates: availableDates,
+              asOf: resolvedAsOf,
+            );
+      if (entry == null) continue;
+      final symbolMetadata = metadata[symbol];
+      if (symbolMetadata == null) continue;
+      items.add(
+        _buildWatchlistItem(
+          symbol: symbol,
+          metadata: symbolMetadata,
+          historicalEntry: entry,
+          realtimeQuote: quotes[symbol],
+          // Always the actual latest trading day — controls when realtime is used
+          latestDate: latestDate,
+        ),
+      );
+    }
+    return WatchlistSnapshot(
+      asOf: resolvedAsOf,
+      items: items,
+      availableDates: availableDates,
     );
   }
 
+  /// Lazily load and cache the trading-day list.
+  /// - Related tests: test/features/watchlist/data/naver_watchlist_repository_test.dart
   @override
   Future<List<DateTime>> fetchAvailableDates() async {
-    // TODO(assignment): Lazily load and cache the trading-day list.
-    //
-    // Suggested flow:
-    // - Reuse _availableDatesCache when present.
-    // - Pick the first valid favorite symbol as the reference symbol.
-    // - Request page 1 first to discover lastPage.
-    // - Fetch the remaining pages in small batches.
-    // - Flatten all localDate values into one descending list.
-    throw UnimplementedError(
-      'TODO(assignment): implement NaverWatchlistRepository.fetchAvailableDates',
-    );
+    // Reuse _availableDatesCache when present.
+    if (_availableDatesCache != null) {
+      return _availableDatesCache!;
+    }
+    // Pick the first valid favorite symbol as the reference symbol.
+    final favoriteIds = await loadFavoriteIds();
+    final symbol = favoriteIds
+        .map(domesticSymbolFromFavoriteId)
+        .whereType<String>()
+        .firstOrNull;
+    if (symbol == null) {
+      return [];
+    }
+    // Request page 1 first to discover lastPage.
+    final firstPage = await _loadDailyHistoryPage(symbol, 1);
+    final lastPage = firstPage.lastPage;
+    // Save the first page's localDate value.
+    final availableDates = <DateTime>[
+      ...firstPage.priceInfos.map((e) => e.localDate),
+    ];
+    // Fetch the remaining pages in small batches.
+    for (var page = 2; page <= lastPage; page += 1) {
+      // Flatten all localDate values into one descending list.
+      final pageItem = await _loadDailyHistoryPage(symbol, page);
+      availableDates.addAll(pageItem.priceInfos.map((e) => e.localDate));
+    }
+    // Cache the result.
+    _availableDatesCache = availableDates;
+    return availableDates;
   }
 
   @override
