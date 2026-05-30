@@ -105,9 +105,10 @@ class NaverChartMetadataDto {
   });
 
   factory NaverChartMetadataDto.fromJson(Map<String, dynamic> json) {
-    // TODO(assignment): Map the chart metadata payload into this DTO.
-    throw UnimplementedError(
-      'TODO(assignment): implement NaverChartMetadataDto.fromJson',
+    return NaverChartMetadataDto(
+      symbol: _readString(json['symbolCode']),
+      stockName: _readString(json['stockName']),
+      stockExchangeNameKor: _readString(json['stockExchangeNameKor']),
     );
   }
 
