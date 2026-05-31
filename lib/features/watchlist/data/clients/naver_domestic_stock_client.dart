@@ -166,28 +166,70 @@ class NaverDomesticStockClient implements NaverStockDataClient {
     required String symbol,
     required int page,
   }) async {
-    // TODO(assignment): Implement parsing for the legacy daily history page.
-    //
-    // Goal:
-    // - Validate that page >= 1.
-    // - Request https://finance.naver.com/item/sise_day.naver
-    //   with code=<symbol> and page=<page>.
-    // - Use ResponseType.bytes and decode the HTML with latin1.
-    // - Parse one page of historical rows from the HTML table.
-    // - For each row, extract:
-    //   - localDate (yyyyMMdd)
-    //   - closePrice
-    //   - openPrice
-    //   - highPrice
-    //   - lowPrice
-    //   - accumulatedTradingVolume
-    // - Also extract lastPage from the pagination area.
-    //
     // Hint:
     // - The rendered table order is close, change, open, high, low, volume.
     // - You can keep using NaverHistoricalPriceDto.fromJson to build rows.
-    throw UnimplementedError(
-      'TODO(assignment): implement NaverDomesticStockClient.fetchDailyHistoryPage',
+
+    // Validate that page >= 1.
+    if (page < 1) {
+      throw ArgumentError('page must be greater than 0');
+    }
+    // Request https://finance.naver.com/item/sise_day.naver with code=<symbol> and page=<page>.
+    final response = await _dio.get(
+      'https://finance.naver.com/item/sise_day.naver',
+      queryParameters: {'code': symbol, 'page': page},
+      options: Options(
+        headers: _defaultHeaders,
+        responseType: ResponseType.bytes, // Use ResponseType.bytes
+      ),
+    );
+    // and decode the HTML with latin1.
+    final html = latin1.decode(response.data);
+
+    // Parse one page of historical rows from the HTML table.
+    // For each row, extract: localDate (yyyyMMdd), closePrice, openPrice, highPrice, lowPrice, accumulatedTradingVolume.
+    final rowPattern = RegExp(
+      r'<tr onMouseOver="mouseOver\(this\)"[^>]*>([\s\S]*?)</tr>',
+    );
+    final datePattern = RegExp(r'(\d{4})\.(\d{2})\.(\d{2})');
+    final numPattern = RegExp(
+      r'<td class="num">[\s\S]*?<span class="tah p11[^"]*">\s*([\d,]+)\s*</span>',
+    );
+    final priceInfos = <NaverHistoricalPriceDto>[];
+    for (final row in rowPattern.allMatches(html)) {
+      final rowHtml = row.group(1)!;
+      final dateMatch = datePattern.firstMatch(rowHtml);
+      if (dateMatch == null) continue;
+      final nums = numPattern
+          .allMatches(rowHtml)
+          .map((m) => m.group(1)!)
+          .toList();
+      if (nums.length < 6) continue;
+      final localDate =
+          '${dateMatch.group(1)}${dateMatch.group(2)}${dateMatch.group(3)}';
+      priceInfos.add(
+        NaverHistoricalPriceDto.fromJson({
+          'localDate': localDate,
+          'closePrice': _parseDouble(nums[0]),
+          'openPrice': _parseDouble(nums[2]),
+          'highPrice': _parseDouble(nums[3]),
+          'lowPrice': _parseDouble(nums[4]),
+          'accumulatedTradingVolume': _parseInt(nums[5]),
+        }),
+      );
+    }
+    // Also extract lastPage from the pagination area.
+    final lastPageMatch = RegExp(
+      r'class="pgRR"[\s\S]*?page=(\d+)',
+    ).firstMatch(html);
+    final lastPage = lastPageMatch != null
+        ? int.parse(lastPageMatch.group(1)!)
+        : 1;
+    return NaverDailyHistoryPageDto(
+      symbol: symbol,
+      page: page,
+      lastPage: lastPage,
+      priceInfos: priceInfos,
     );
   }
 }
