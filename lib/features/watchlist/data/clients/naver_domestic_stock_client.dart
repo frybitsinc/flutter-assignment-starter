@@ -104,10 +104,13 @@ class NaverDomesticStockClient implements NaverStockDataClient {
     );
     // Decode the response with _decodeJsonObjectBody.
     // Read the "items" array and map each entry with NaverAutocompleteItemDto.fromJson.
-    return _decodeJsonObjectBody(
-      response.data,
-      'searchStocks',
-    )['items'].map((e) => NaverAutocompleteItemDto.fromJson(e)).toList();
+    return _decodeJsonObjectBody(response.data, 'searchStocks')['items']
+        .map(
+          (e) => NaverAutocompleteItemDto.fromJson(
+            _asStringKeyedMap(e, 'searchStocks'),
+          ),
+        )
+        .toList();
   }
 
   @override
@@ -139,7 +142,9 @@ class NaverDomesticStockClient implements NaverStockDataClient {
       for (final area in areas)
         for (final data in area['datas'] as List<dynamic>)
           // Convert each realtime row with NaverRealtimeQuoteDto.fromJson.
-          NaverRealtimeQuoteDto.fromJson(data as Map<String, dynamic>),
+          NaverRealtimeQuoteDto.fromJson(
+            _asStringKeyedMap(data, 'fetchRealtimeQuotes'),
+          ),
     ];
     // Return a map keyed by the six-digit domestic symbol.
     return {for (final quote in quotes) quote.symbol: quote};
