@@ -24,6 +24,7 @@ class NaverWatchlistRepository implements WatchlistRepository {
        _logoUrlResolver = logoUrlResolver ?? const NaverStockLogoUrlResolver();
 
   static const _historyRowsPerPage = 10;
+  static const _detailWindowSize = 30;
 
   final NaverStockDataClient _client;
   final FavoriteIdsLocalStore _favoriteIdsLocalStore;
@@ -134,23 +135,109 @@ class NaverWatchlistRepository implements WatchlistRepository {
     return availableDates;
   }
 
+  /// Build the detail panel from a 30-trading-day window.
+  /// - Related tests: test/features/watchlist/data/naver_watchlist_repository_test.dart
   @override
   Future<WatchlistDetail> fetchWatchlistDetail({
     required String symbol,
     required MarketType market,
     DateTime? asOf,
   }) async {
-    // TODO(assignment): Build the detail panel from a 30-trading-day window.
-    //
-    // Requirements:
-    // - Only domestic stocks are supported.
-    // - When asOf is null, show the latest available detail.
-    // - When asOf is set, resolve the requested trading day and collect the
-    //   previous 30 trading days (including the selected day).
-    // - Use realtime data only for the latest trading day.
-    // - Compute changeAmount, changeRate, volumeRatio, and candles.
-    throw UnimplementedError(
-      'TODO(assignment): implement NaverWatchlistRepository.fetchWatchlistDetail',
+    // Only domestic stocks are supported.
+    if (market != MarketType.domestic) {
+      throw ArgumentError.value(
+        market,
+        'market',
+        'Naver repository only supports domestic stock details',
+      );
+    }
+
+    // When asOf is null, show the latest available detail.
+    // When asOf is set, resolve the requested trading day and collect the
+    // previous 30 trading days (including the selected day).
+    final availableDates = await fetchAvailableDates();
+    final resolvedAsOf = _resolveAsOf(availableDates, asOf);
+    final latestDate = availableDates.isEmpty
+        ? normalizeAsOfDate(asOf ?? DateTime.now())
+        : availableDates.first;
+    final isLatest = resolvedAsOf == latestDate;
+
+    final entry = isLatest
+        ? await _loadLatestHistoricalEntry(symbol)
+        : await _loadHistoricalEntryForDate(
+            symbol: symbol,
+            availableDates: availableDates,
+            asOf: resolvedAsOf,
+          );
+    if (entry == null) {
+      throw Exception('Failed to load historical entry for $symbol');
+    }
+
+    final selectedIndex = _indexOfDate(availableDates, resolvedAsOf) ?? 0;
+    final endIndex = selectedIndex + _detailWindowSize;
+    final windowDatesDescending = availableDates.sublist(
+      selectedIndex,
+      endIndex > availableDates.length ? availableDates.length : endIndex,
+    );
+
+    final rowsByDate = await _loadWindowRows(
+      symbol: symbol,
+      startIndex: selectedIndex,
+      endIndexExclusive: endIndex > availableDates.length
+          ? availableDates.length
+          : endIndex,
+    );
+
+    // Use realtime data only for the latest trading day.
+    final realtimeQuote = isLatest
+        ? (await _loadRealtimeQuotes([symbol]))[symbol]
+        : null;
+
+    final currentPrice = isLatest && realtimeQuote != null
+        ? realtimeQuote.currentPrice
+        : entry.row.closePrice;
+    final changeRate = isLatest && realtimeQuote != null
+        ? realtimeQuote.changeRate
+        : _percentChange(
+            currentPrice - entry.previousClose,
+            entry.previousClose,
+          );
+    final tradeVolume = isLatest && realtimeQuote != null
+        ? realtimeQuote.accumulatedTradingVolume
+        : entry.row.accumulatedTradingVolume;
+
+    return WatchlistDetail(
+      itemId: canonicalDomesticFavoriteId(symbol),
+      symbol: symbol,
+      market: MarketType.domestic,
+      currency: 'KRW',
+      currentPrice: currentPrice,
+      changeAmount: currentPrice - entry.previousClose,
+      changeRate: changeRate,
+      tradeVolume: tradeVolume,
+      volumeRatio: _volumeRatio(
+        windowDatesDescending: windowDatesDescending,
+        rowsByDate: rowsByDate,
+      ),
+      openPrice: entry.row.openPrice,
+      openChangeRate: _percentChange(
+        entry.row.openPrice - entry.previousClose,
+        entry.previousClose,
+      ),
+      highPrice: entry.row.highPrice,
+      highChangeRate: _percentChange(
+        entry.row.highPrice - entry.previousClose,
+        entry.previousClose,
+      ),
+      lowPrice: entry.row.lowPrice,
+      lowChangeRate: _percentChange(
+        entry.row.lowPrice - entry.previousClose,
+        entry.previousClose,
+      ),
+      candles: _candles(
+        windowDatesDescending: windowDatesDescending,
+        rowsByDate: rowsByDate,
+      ),
     );
   }
 
@@ -490,6 +577,26 @@ class NaverWatchlistRepository implements WatchlistRepository {
       }
     }
     return null;
+  }
+
+  Future<Map<String, NaverHistoricalPriceDto>> _loadWindowRows({
+    required String symbol,
+    required int startIndex,
+    required int endIndexExclusive,
+  }) async {
+    final rowsByDate = <String, NaverHistoricalPriceDto>{};
+    if (endIndexExclusive <= startIndex) {
+      return rowsByDate;
+    }
+    final firstPage = _pageNumberForIndex(startIndex);
+    final lastPage = _pageNumberForIndex(endIndexExclusive - 1);
+    for (var page = firstPage; page <= lastPage; page += 1) {
+      final historyPage = await _loadDailyHistoryPage(symbol, page);
+      for (final row in historyPage.priceInfos) {
+        rowsByDate[_dateKey(row.localDate)] = row;
+      }
+    }
+    return rowsByDate;
   }
 
   double _volumeRatio({
