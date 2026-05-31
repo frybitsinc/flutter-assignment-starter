@@ -154,22 +154,45 @@ class NaverWatchlistRepository implements WatchlistRepository {
     );
   }
 
+  /// Search domestic stocks and convert them into StockSearchItem values.
+  /// - Related tests: test/features/watchlist/data/naver_watchlist_repository_test.dart
   @override
   Future<List<StockSearchItem>> searchStocks({required String query}) async {
-    // TODO(assignment): Search domestic stocks and convert them into
-    // StockSearchItem values.
-    //
-    // Requirements:
-    // - Trim the query and return [] for empty input.
-    // - Use _client.searchStocks(trimmedQuery).
-    // - Keep only domestic six-digit stock results.
-    // - Deduplicate duplicate symbols.
-    // - Convert every symbol into canonical id: domestic:{symbol}
-    // - Set isFavorite by comparing against loadFavoriteIds().
-    // - Fill logoUrl via _logoUrlResolver.
-    throw UnimplementedError(
-      'TODO(assignment): implement NaverWatchlistRepository.searchStocks',
-    );
+    // Trim the query and return [] for empty input.
+    final trimmedQuery = query.trim();
+    if (trimmedQuery.isEmpty) {
+      return const [];
+    }
+    // Use _client.searchStocks(trimmedQuery).
+    final results = await _client.searchStocks(trimmedQuery);
+
+    final favoriteIds = await loadFavoriteIds();
+    final seenSymbols = <String>{};
+    final items = <StockSearchItem>[];
+
+    for (final item in results) {
+      // Keep only domestic six-digit stock results.
+      // Deduplicate duplicate symbols.
+      if (!item.isDomesticStock || !seenSymbols.add(item.code)) {
+        continue;
+      }
+      // Convert every symbol into canonical id: domestic:{symbol}
+      final id = canonicalDomesticFavoriteId(item.code);
+      items.add(
+        StockSearchItem(
+          id: id,
+          market: MarketType.domestic,
+          marketLabel: item.typeName,
+          symbol: item.code,
+          name: item.name,
+          // Fill logoUrl via _logoUrlResolver.
+          logoUrl: _logoUrlResolver.resolveDomesticStockLogoUrl(item.code),
+          // Set isFavorite by comparing against loadFavoriteIds().
+          isFavorite: favoriteIds.contains(id),
+        ),
+      );
+    }
+    return items;
   }
 
   @override
