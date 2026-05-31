@@ -70,7 +70,7 @@ class NaverRealtimeQuoteDto {
       highPrice: _readDouble(json['hv']),
       lowPrice: _readDouble(json['lv']),
       accumulatedTradingVolume: _readInt(json['aq']),
-      countOfListedStock: _readInt(json['countOfListedStock']),
+      countOfListedStock: _readNullableInt(json['countOfListedStock']) ?? 0,
     );
   }
 
