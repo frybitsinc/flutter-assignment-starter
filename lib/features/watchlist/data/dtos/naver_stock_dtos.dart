@@ -20,7 +20,7 @@ class NaverAutocompleteItemDto {
       typeCode: _readString(json['typeCode']),
       typeName: _readString(json['typeName']),
       url: _readString(json['url']),
-      nationCode: _readString(json['nationCode']),
+      nationCode: _readNullableString(json['nationCode']) ?? '',
       category: _readString(json['category']),
     );
   }
@@ -205,6 +205,13 @@ String _readString(Object? value) {
     throw FormatException('Missing string value for "$value"');
   }
   return text;
+}
+
+String? _readNullableString(Object? value) {
+  if (value == null) {
+    return null;
+  }
+  return _readString(value);
 }
 
 double _readDouble(Object? value) {
