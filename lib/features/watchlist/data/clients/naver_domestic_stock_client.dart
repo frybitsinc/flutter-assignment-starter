@@ -104,8 +104,9 @@ class NaverDomesticStockClient implements NaverStockDataClient {
     );
     // Decode the response with _decodeJsonObjectBody.
     // Read the "items" array and map each entry with NaverAutocompleteItemDto.fromJson.
-    return _decodeJsonObjectBody(response.data, 'searchStocks')['items']
-        .map(
+    return (_decodeJsonObjectBody(response.data, 'searchStocks')['items']
+            as List<dynamic>)
+        .map<NaverAutocompleteItemDto>(
           (e) => NaverAutocompleteItemDto.fromJson(
             _asStringKeyedMap(e, 'searchStocks'),
           ),
