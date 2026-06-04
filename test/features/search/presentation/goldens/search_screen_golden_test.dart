@@ -33,6 +33,8 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  // TODO: 저장된 기준 이미지 search_results_selected.png 가 Figma 상의 디자인과 달라 테스트 실패.
+  // flutter test --update-goldens 로 재생성 해도 되는지 확실치않아서 일단 그대로 두었습니다.
   testWidgets('matches the search results screen at 360 width', (tester) async {
     await pumpSearch(tester);
     await tester.enterText(find.byKey(const Key('search-input')), 'sk');
@@ -57,6 +59,8 @@ void main() {
     );
   });
 
+  // TODO: 저장된 기준 이미지 search_results_toast.png 가 Figma 상의 디자인과 달라 테스트 실패.
+  // flutter test --update-goldens 로 재생성 해도 되는지 확실치않아서 일단 그대로 두었습니다.
   testWidgets('matches the favorite toast state at 360 width', (tester) async {
     await pumpSearch(tester);
     await tester.enterText(find.byKey(const Key('search-input')), 'sk');
