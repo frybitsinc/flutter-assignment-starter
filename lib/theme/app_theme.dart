@@ -250,7 +250,7 @@ class AppTypography {
   static final sheetButton = TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 16,
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w700,
     height: 1,
     letterSpacing: 0,
   );
