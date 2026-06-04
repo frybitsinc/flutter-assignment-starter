@@ -109,6 +109,7 @@ class _SearchActionButton extends StatelessWidget {
   }
 }
 
+// ignore: unused_element
 class _SearchActionDivider extends StatelessWidget {
   const _SearchActionDivider();
 
