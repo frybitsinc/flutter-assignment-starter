@@ -22,13 +22,6 @@ class SearchActionBar extends StatelessWidget {
         color: AppColors.bg.bg_2_212121,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: AppColors.border.border_5_3b3e53),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x40000000),
-            blurRadius: 10,
-            offset: Offset(0, 2),
-          ),
-        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -40,7 +33,6 @@ class SearchActionBar extends StatelessWidget {
             contentStartInset: 60,
             onTap: onActionTap,
           ),
-          const _SearchActionDivider(),
           _SearchActionButton(
             layout: layout,
             action: '종목토론',
@@ -97,10 +89,16 @@ class _SearchActionButton extends StatelessWidget {
                     assetHeight: assetPath == AppAssets.actionNews
                         ? AppAssetSizes.actionNews.height
                         : AppAssetSizes.actionDiscussion.height,
-                    color: AppColors.text.text_fafafa,
+                    color: AppColors.text.text_3_9e9e9e,
                   ),
                   const SizedBox(width: 6),
-                  Text(action, style: AppTypography.action),
+                  Text(
+                    action,
+                    style: AppTypography.action.copyWith(
+                      fontWeight: FontWeight.w700,
+                      height: 1,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -111,6 +109,7 @@ class _SearchActionButton extends StatelessWidget {
   }
 }
 
+// ignore: unused_element
 class _SearchActionDivider extends StatelessWidget {
   const _SearchActionDivider();
 

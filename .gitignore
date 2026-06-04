@@ -18,6 +18,9 @@
 # VS Code settings are often personal.
 .vscode/
 
+# Cursor settings are often personal.
+.cursor/
+
 # Logs
 *.log
 flutter_*.log
@@ -68,3 +71,6 @@ app.*.map.json
 
 # Legacy / migration
 migrate_working_dir/
+
+# FVM Version Cache
+.fvm/

@@ -1,0 +1,123 @@
+00:00 +0: loading /Users/rinkang/flutter-assignment-starter/test/features/demo/presentation/demo_shell_test.dart
+00:00 +0: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart: matches the search results screen at 360 width
+00:00 +1: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart: matches the search results screen at 360 width
+00:00 +2: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart: matches the search results screen at 360 width
+00:00 +3: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart: matches the search results screen at 360 width
+00:00 +4: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart: matches the search results screen at 360 width
+00:00 +5: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart: matches the search results screen at 360 width
+00:00 +6: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart: matches the search results screen at 360 width
+00:00 +7: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart: matches the search results screen at 360 width
+00:00 +8: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart: matches the search results screen at 360 width
+00:00 +9: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart: matches the search results screen at 360 width
+00:00 +10: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart: matches the search results screen at 360 width
+00:01 +11: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart: matches the search results screen at 360 width
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown while running async test code:
+Golden "search_results_selected.png": Pixel test failed, 0.44%, 1454px diff detected.
+Failure feedback can be found at
+/Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/failures
+
+When the exception was thrown, this was the stack:
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+<asynchronous suspension>
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+<asynchronous suspension>
+<asynchronous suspension>
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+<asynchronous suspension>
+<asynchronous suspension>
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+<asynchronous suspension>
+#6      main.<anonymous closure> (file:///Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart:43:5)
+<asynchronous suspension>
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 3 frames from dart:async and package:stack_trace)
+
+The exception was caught asynchronously.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:01 +11 -1: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/search_screen_test.dart: smoke: expands one search result at a time
+00:01 +11 -1: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart: matches the search results screen at 360 width [E]
+  Test failed. See exception logs above.
+  The test description was: matches the search results screen at 360 width
+  
+00:01 +12 -1: /Users/rinkang/flutter-assignment-starter/test/features/root/presentation/app_shell_test.dart: smoke: switches between watchlist and search tabs
+00:01 +13 -1: /Users/rinkang/flutter-assignment-starter/test/features/root/presentation/app_shell_test.dart: smoke: switches between watchlist and search tabs
+00:01 +14 -1: /Users/rinkang/flutter-assignment-starter/test/features/root/presentation/app_shell_test.dart: smoke: switches between watchlist and search tabs
+00:01 +15 -1: /Users/rinkang/flutter-assignment-starter/test/features/root/presentation/app_shell_test.dart: smoke: switches between watchlist and search tabs
+00:01 +16 -1: /Users/rinkang/flutter-assignment-starter/test/features/root/presentation/app_shell_test.dart: smoke: switches between watchlist and search tabs
+00:01 +17 -1: /Users/rinkang/flutter-assignment-starter/test/features/root/presentation/app_shell_test.dart: smoke: switches between watchlist and search tabs
+00:01 +18 -1: /Users/rinkang/flutter-assignment-starter/test/features/root/presentation/app_shell_test.dart: smoke: switches between watchlist and search tabs
+00:01 +19 -1: /Users/rinkang/flutter-assignment-starter/test/features/root/presentation/app_shell_test.dart: smoke: switches between watchlist and search tabs
+00:01 +20 -1: /Users/rinkang/flutter-assignment-starter/test/features/root/presentation/app_shell_test.dart: smoke: switches between watchlist and search tabs
+00:02 +21 -1: /Users/rinkang/flutter-assignment-starter/test/features/demo/presentation/demo_shell_test.dart: smoke: play pause and restart controls stay interactive
+00:02 +22 -1: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/search_screen_test.dart: smoke: clears search results and selection on clear
+00:02 +23 -1: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart: matches the favorite toast state at 360 width
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown while running async test code:
+Golden "search_results_toast.png": Pixel test failed, 1.97%, 6488px diff detected.
+Failure feedback can be found at
+/Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/failures
+
+When the exception was thrown, this was the stack:
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+<asynchronous suspension>
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+<asynchronous suspension>
+<asynchronous suspension>
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+<asynchronous suspension>
+<asynchronous suspension>
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+<asynchronous suspension>
+#6      main.<anonymous closure> (file:///Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart:67:5)
+<asynchronous suspension>
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 3 frames from dart:async and package:stack_trace)
+
+The exception was caught asynchronously.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:02 +23 -2: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/search_screen_test.dart: assignment: builds highlighted RichText for title and subtitle
+00:02 +23 -2: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart: matches the favorite toast state at 360 width [E]
+  Test failed. See exception logs above.
+  The test description was: matches the favorite toast state at 360 width
+  
+00:02 +24 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/data/mock_watchlist_repository_test.dart: persists favorite ids and derives the watchlist from them
+00:02 +25 -2: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/search_screen_test.dart: assignment: selected result renders the two action buttons
+00:02 +26 -2: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/search_screen_test.dart: assignment: selected result renders the two action buttons
+00:02 +27 -2: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/search_screen_test.dart: assignment: selected result renders the two action buttons
+00:02 +28 -2: /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/search_screen_test.dart: assignment: builds the toast with blur and heart-check composition
+00:02 +29 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/data/naver_stock_logo_url_resolver_test.dart: builds the desktop Naver stock logo URL for a domestic symbol
+00:02 +30 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/domain/watchlist_formatters_test.dart: sorts by price, change rate, name, and market cap
+00:02 +31 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/domain/watchlist_formatters_test.dart: formats price, volume, change rate, and date
+00:02 +32 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/watchlist_screen_test.dart: smoke: renders the watchlist screen
+00:02 +33 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/watchlist_screen_test.dart: smoke: renders the watchlist screen
+00:02 +34 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/watchlist_screen_test.dart: smoke: renders the watchlist screen
+00:03 +35 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/watchlist_screen_test.dart: smoke: renders the watchlist screen
+00:03 +36 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/watchlist_screen_test.dart: smoke: renders the watchlist screen
+00:03 +37 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/watchlist_screen_test.dart: smoke: renders the watchlist screen
+00:03 +38 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/watchlist_screen_test.dart: smoke: renders the watchlist screen
+00:03 +39 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/watchlist_screen_test.dart: smoke: renders the watchlist screen
+00:03 +40 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/watchlist_screen_test.dart: smoke: renders the watchlist screen
+00:03 +41 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/watchlist_screen_test.dart: smoke: renders the watchlist screen
+00:03 +42 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/watchlist_screen_test.dart: smoke: renders the watchlist screen
+00:04 +43 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/goldens/watchlist_screen_golden_test.dart: matches the selected watchlist screen at 360 width
+00:04 +44 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/goldens/watchlist_screen_golden_test.dart: matches the selected watchlist screen at 360 width
+00:04 +45 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/goldens/watchlist_screen_golden_test.dart: matches the selected watchlist screen at 360 width
+00:04 +46 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/goldens/watchlist_screen_golden_test.dart: matches the selected watchlist screen at 360 width
+00:04 +47 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/goldens/watchlist_screen_golden_test.dart: matches the selected watchlist screen at 360 width
+00:04 +48 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/watchlist_screen_test.dart: assignment: applies the selected date and refreshes list and detail together
+00:05 +49 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/goldens/watchlist_screen_golden_test.dart: matches the sort bottom sheet at 360 width
+00:05 +50 -2: /Users/rinkang/flutter-assignment-starter/test/features/watchlist/presentation/goldens/watchlist_screen_golden_test.dart: matches the date bottom sheet at 360 width
+00:05 +51 -2: Some tests failed.
+
+Failing tests:
+  /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart: matches the favorite toast state at 360 width
+  /Users/rinkang/flutter-assignment-starter/test/features/search/presentation/goldens/search_screen_golden_test.dart: matches the search results screen at 360 width

@@ -88,65 +88,83 @@ class NaverDomesticStockClient implements NaverStockDataClient {
 
   @override
   Future<List<NaverAutocompleteItemDto>> searchStocks(String query) async {
-    // TODO(assignment): Implement the Naver autocomplete request.
-    //
-    // Goal:
-    // - Call https://ac.stock.naver.com/ac with Dio.
-    // - Send q=<query> and target=stock,ipo,index,marketindicator.
-    // - Use _defaultHeaders and ResponseType.plain because the response body
-    //   may arrive as a String instead of a decoded JSON map.
-    // - Decode the response with _decodeJsonObjectBody.
-    // - Read the "items" array and map each entry with
-    //   NaverAutocompleteItemDto.fromJson.
-    //
-    // Related tests:
-    // - test/features/watchlist/data/naver_stock_dtos_test.dart
-    // - test/features/watchlist/data/naver_watchlist_repository_test.dart
-    throw UnimplementedError(
-      'TODO(assignment): implement NaverDomesticStockClient.searchStocks',
+    // Call https://ac.stock.naver.com/ac with Dio.
+    // Send q=<query> and target=stock,ipo,index,marketindicator.
+    // Use _defaultHeaders and ResponseType.plain because the response body may arrive as a String instead of a decoded JSON map.
+    final response = await _dio.get(
+      'https://ac.stock.naver.com/ac',
+      queryParameters: {
+        'q': query,
+        'target': 'stock,ipo,index,marketindicator',
+      },
+      options: Options(
+        headers: _defaultHeaders,
+        responseType: ResponseType.plain,
+      ),
     );
+    // Decode the response with _decodeJsonObjectBody.
+    // Read the "items" array and map each entry with NaverAutocompleteItemDto.fromJson.
+    return (_decodeJsonObjectBody(response.data, 'searchStocks')['items']
+            as List<dynamic>)
+        .map<NaverAutocompleteItemDto>(
+          (e) => NaverAutocompleteItemDto.fromJson(
+            _asStringKeyedMap(e, 'searchStocks'),
+          ),
+        )
+        .toList();
   }
 
   @override
   Future<Map<String, NaverRealtimeQuoteDto>> fetchRealtimeQuotes(
     Iterable<String> symbols,
   ) async {
-    // TODO(assignment): Implement the Naver realtime quote request.
-    //
-    // Goal:
-    // - Deduplicate the incoming symbols.
-    // - Return an empty map when there is nothing to request.
-    // - Build query=SERVICE_ITEM:005930,000660 style payload.
-    // - Call https://polling.finance.naver.com/api/realtime.
-    // - Decode the JSON body, then traverse result -> areas -> datas.
-    // - Convert each realtime row with NaverRealtimeQuoteDto.fromJson.
-    // - Return a map keyed by the six-digit domestic symbol.
-    //
-    // Note:
-    // - The response body may be plain text JSON, so use ResponseType.plain.
-    // - Some tests use a fake client, but the real app depends on this method.
-    throw UnimplementedError(
-      'TODO(assignment): implement NaverDomesticStockClient.fetchRealtimeQuotes',
+    // Deduplicate the incoming symbols.
+    // Return an empty map when there is nothing to request.
+    final uniqueSymbols = symbols.toSet();
+    if (uniqueSymbols.isEmpty) {
+      return {};
+    }
+    // Build query=SERVICE_ITEM:005930,000660 style payload.
+    final query = 'SERVICE_ITEM:${uniqueSymbols.join(',')}';
+    // Call https://polling.finance.naver.com/api/realtime.
+    final response = await _dio.get(
+      'https://polling.finance.naver.com/api/realtime',
+      queryParameters: {'query': query},
+      options: Options(
+        headers: _defaultHeaders,
+        responseType: ResponseType.plain,
+      ),
     );
+    // Decode the JSON body,
+    final payload = _decodeJsonObjectBody(response.data, 'fetchRealtimeQuotes');
+    // then traverse result -> areas -> datas.
+    final areas = payload['result']['areas'] as List<dynamic>;
+    final quotes = [
+      for (final area in areas)
+        for (final data in area['datas'] as List<dynamic>)
+          // Convert each realtime row with NaverRealtimeQuoteDto.fromJson.
+          NaverRealtimeQuoteDto.fromJson(
+            _asStringKeyedMap(data, 'fetchRealtimeQuotes'),
+          ),
+    ];
+    // Return a map keyed by the six-digit domestic symbol.
+    return {for (final quote in quotes) quote.symbol: quote};
   }
 
   @override
   Future<NaverChartMetadataDto> fetchChartMetadata(String symbol) async {
-    // TODO(assignment): Implement the chart metadata request.
-    //
-    // Goal:
-    // - Call
-    //   https://stock.naver.com/api/securityFe/api/fchart/domestic/stock/{symbol}
-    // - Decode the JSON object with _decodeJsonObjectBody.
-    // - Convert the payload with NaverChartMetadataDto.fromJson.
-    //
-    // Required fields for the DTO:
-    // - symbolCode
-    // - stockName
-    // - stockExchangeNameKor
-    throw UnimplementedError(
-      'TODO(assignment): implement NaverDomesticStockClient.fetchChartMetadata',
+    // Call https://stock.naver.com/api/securityFe/api/fchart/domestic/stock/{symbol}
+    final response = await _dio.get(
+      'https://stock.naver.com/api/securityFe/api/fchart/domestic/stock/$symbol',
+      options: Options(
+        headers: _defaultHeaders,
+        responseType: ResponseType.plain,
+      ),
     );
+    // Decode the JSON object with _decodeJsonObjectBody.
+    // Convert the payload with NaverChartMetadataDto.fromJson.
+    final payload = _decodeJsonObjectBody(response.data, 'fetchChartMetadata');
+    return NaverChartMetadataDto.fromJson(payload);
   }
 
   @override
@@ -154,28 +172,70 @@ class NaverDomesticStockClient implements NaverStockDataClient {
     required String symbol,
     required int page,
   }) async {
-    // TODO(assignment): Implement parsing for the legacy daily history page.
-    //
-    // Goal:
-    // - Validate that page >= 1.
-    // - Request https://finance.naver.com/item/sise_day.naver
-    //   with code=<symbol> and page=<page>.
-    // - Use ResponseType.bytes and decode the HTML with latin1.
-    // - Parse one page of historical rows from the HTML table.
-    // - For each row, extract:
-    //   - localDate (yyyyMMdd)
-    //   - closePrice
-    //   - openPrice
-    //   - highPrice
-    //   - lowPrice
-    //   - accumulatedTradingVolume
-    // - Also extract lastPage from the pagination area.
-    //
     // Hint:
     // - The rendered table order is close, change, open, high, low, volume.
     // - You can keep using NaverHistoricalPriceDto.fromJson to build rows.
-    throw UnimplementedError(
-      'TODO(assignment): implement NaverDomesticStockClient.fetchDailyHistoryPage',
+
+    // Validate that page >= 1.
+    if (page < 1) {
+      throw ArgumentError('page must be greater than 0');
+    }
+    // Request https://finance.naver.com/item/sise_day.naver with code=<symbol> and page=<page>.
+    final response = await _dio.get(
+      'https://finance.naver.com/item/sise_day.naver',
+      queryParameters: {'code': symbol, 'page': page},
+      options: Options(
+        headers: _defaultHeaders,
+        responseType: ResponseType.bytes, // Use ResponseType.bytes
+      ),
+    );
+    // and decode the HTML with latin1.
+    final html = latin1.decode(response.data);
+
+    // Parse one page of historical rows from the HTML table.
+    // For each row, extract: localDate (yyyyMMdd), closePrice, openPrice, highPrice, lowPrice, accumulatedTradingVolume.
+    final rowPattern = RegExp(
+      r'<tr onMouseOver="mouseOver\(this\)"[^>]*>([\s\S]*?)</tr>',
+    );
+    final datePattern = RegExp(r'(\d{4})\.(\d{2})\.(\d{2})');
+    final numPattern = RegExp(
+      r'<td class="num">[\s\S]*?<span class="tah p11[^"]*">\s*([\d,]+)\s*</span>',
+    );
+    final priceInfos = <NaverHistoricalPriceDto>[];
+    for (final row in rowPattern.allMatches(html)) {
+      final rowHtml = row.group(1)!;
+      final dateMatch = datePattern.firstMatch(rowHtml);
+      if (dateMatch == null) continue;
+      final nums = numPattern
+          .allMatches(rowHtml)
+          .map((m) => m.group(1)!)
+          .toList();
+      if (nums.length < 6) continue;
+      final localDate =
+          '${dateMatch.group(1)}${dateMatch.group(2)}${dateMatch.group(3)}';
+      priceInfos.add(
+        NaverHistoricalPriceDto.fromJson({
+          'localDate': localDate,
+          'closePrice': _parseDouble(nums[0]),
+          'openPrice': _parseDouble(nums[2]),
+          'highPrice': _parseDouble(nums[3]),
+          'lowPrice': _parseDouble(nums[4]),
+          'accumulatedTradingVolume': _parseInt(nums[5]),
+        }),
+      );
+    }
+    // Also extract lastPage from the pagination area.
+    final lastPageMatch = RegExp(
+      r'class="pgRR"[\s\S]*?page=(\d+)',
+    ).firstMatch(html);
+    final lastPage = lastPageMatch != null
+        ? int.parse(lastPageMatch.group(1)!)
+        : 1;
+    return NaverDailyHistoryPageDto(
+      symbol: symbol,
+      page: page,
+      lastPage: lastPage,
+      priceInfos: priceInfos,
     );
   }
 }

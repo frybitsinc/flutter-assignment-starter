@@ -29,6 +29,7 @@ class WatchlistDateBottomSheet extends StatefulWidget {
 class _WatchlistDateBottomSheetState extends State<WatchlistDateBottomSheet> {
   static const double _itemExtent = 44;
   static const double _pickerHeight = 220;
+  static const double _pickerValueWidth = 120;
 
   late final WatchlistDatePickerOptions _options;
   late FixedExtentScrollController _yearController;
@@ -138,6 +139,9 @@ class _WatchlistDateBottomSheetState extends State<WatchlistDateBottomSheet> {
   }
 
   void _selectMonth(int index) {
+    if (index >= _months.length) {
+      return;
+    }
     final month = _months[index];
     if (month == _selectedMonth) {
       return;
@@ -154,6 +158,9 @@ class _WatchlistDateBottomSheetState extends State<WatchlistDateBottomSheet> {
   }
 
   void _selectDay(int index) {
+    if (index >= _days.length) {
+      return;
+    }
     final day = _days[index];
     if (day == _selectedDay) {
       return;
@@ -199,12 +206,6 @@ class _WatchlistDateBottomSheetState extends State<WatchlistDateBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO(assignment): Rebuild the date bottom sheet body to match Figma.
-    // Suggested scope:
-    // - header
-    // - year / month / day picker area
-    // - selected state styling
-    // - cancel / confirm CTA row
     return SafeArea(
       top: false,
       child: Align(
@@ -230,13 +231,65 @@ class _WatchlistDateBottomSheetState extends State<WatchlistDateBottomSheet> {
               ),
               SizedBox(
                 height: _pickerHeight,
-                child: Center(
-                  child: Text(
-                    'TODO(assignment): WatchlistDateBottomSheet body를 재구성하세요.',
-                    key: const Key('watchlist-date-placeholder'),
-                    style: AppTypography.searchMeta,
-                    textAlign: TextAlign.center,
-                  ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Row(
+                      children: List.generate(
+                        3,
+                        (_) => const _PickerHighlightBar(),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: _DateWheelPicker(
+                              pickerKey: const Key(
+                                'watchlist-date-picker-year',
+                              ),
+                              itemKeyPrefix: 'watchlist-date-item-year',
+                              controller: _yearController,
+                              values: _years,
+                              selectedValue: _selectedYear,
+                              formatter: (v) => '$v년',
+                              onSelectedItemChanged: _selectYear,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Center(
+                            child: _DateWheelPicker(
+                              pickerKey: const Key(
+                                'watchlist-date-picker-month',
+                              ),
+                              itemKeyPrefix: 'watchlist-date-item-month',
+                              controller: _monthController,
+                              values: _months,
+                              selectedValue: _selectedMonth,
+                              formatter: (v) =>
+                                  '${v.toString().padLeft(2, '')}월',
+                              onSelectedItemChanged: _selectMonth,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Center(
+                            child: _DateWheelPicker(
+                              pickerKey: const Key('watchlist-date-picker-day'),
+                              itemKeyPrefix: 'watchlist-date-item-day',
+                              controller: _dayController,
+                              values: _days,
+                              selectedValue: _selectedDay,
+                              formatter: (v) =>
+                                  '${v.toString().padLeft(2, '')}일',
+                              onSelectedItemChanged: _selectDay,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 32),
@@ -256,7 +309,7 @@ class _WatchlistDateBottomSheetState extends State<WatchlistDateBottomSheet> {
                     Expanded(
                       child: _SheetButton(
                         buttonKey: const Key('watchlist-date-confirm'),
-                        label: '매수',
+                        label: '확인',
                         backgroundColor: AppColors.mainAndAccent.primary_ff8a00,
                         onTap: _confirm,
                       ),
@@ -356,38 +409,52 @@ class _DateWheelPicker extends StatelessWidget {
             child: SizedBox(
               height: _WatchlistDateBottomSheetState._itemExtent,
               child: Center(
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 120),
-                  curve: Curves.easeOut,
-                  width: 100,
-                  height: 40,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? AppColors.bg.bg_4_333333
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    formatter(value),
-                    key: Key('$itemKeyPrefix-$value'),
-                    style: tabularTextStyle(
-                      (isSelected
-                              ? AppTypography.sheetPickerValue
-                              : AppTypography.sheetOption)
-                          .copyWith(
-                            color: isSelected
-                                ? AppColors.text.text_fafafa
-                                : AppColors.text.text_3_9e9e9e,
-                          ),
+                child: SizedBox(
+                  width: _WatchlistDateBottomSheetState._pickerValueWidth,
+                  height: _WatchlistDateBottomSheetState._itemExtent,
+                  child: Center(
+                    child: Text(
+                      formatter(value),
+                      key: Key('$itemKeyPrefix-$value'),
+                      style: tabularTextStyle(
+                        AppTypography.sheetPickerValue.copyWith(
+                          color: isSelected
+                              ? AppColors.text.text_fafafa
+                              : AppColors.text.text_3_9e9e9e,
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.w600,
+                          fontSize: isSelected ? 16 : 14,
+                        ),
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _PickerHighlightBar extends StatelessWidget {
+  const _PickerHighlightBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        child: Container(
+          height: _WatchlistDateBottomSheetState._itemExtent,
+          decoration: BoxDecoration(
+            color: AppColors.bg.bg_4_333333,
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
       ),
     );
   }
