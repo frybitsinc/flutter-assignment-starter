@@ -1,0 +1,28 @@
+== Running integration_test/root/favorite_sync_flow_test.dart on macos ==
+00:00 +0: loading /Users/rinkang/flutter-assignment-starter/integration_test/root/favorite_sync_flow_test.dart
+Adding Swift Package Manager integration...                        727ms
+Running pod install...                                             519ms
+Building macOS application...                                   
+✓ Built build/macos/Build/Products/Debug/sample.app
+00:00 +0: syncs favorite state between search and watchlist tabs
+00:06 +0: loading /Users/rinkang/flutter-assignment-starter/integration_test/root/favorite_sync_flow_test.dart
+No widgets found at Offset(644.2, 535.1).
+00:07 +1: (tearDownAll)
+00:07 +1: All tests passed!
+== Running integration_test/watchlist/watchlist_flow_test.dart on macos ==
+
+00:00 +0: loading /Users/rinkang/flutter-assignment-starter/integration_test/watchlist/watchlist_flow_test.dart
+Building macOS application...                                   
+✓ Built build/macos/Build/Products/Debug/sample.app
+00:00 +0: applies a new date and refreshes the selected detail
+00:05 +1: shows detail error and retries successfully
+00:09 +2: (tearDownAll)
+00:09 +2: All tests passed!
+All plugins found for macos are Swift Packages, but your project still has CocoaPods integration. To remove CocoaPods integration, complete the following steps:
+  * In the macos/ directory run "pod deintegrate"
+  * Also in the macos/ directory, delete the Podfile
+  * Remove the include to "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig" in your macos/Flutter/Flutter-Debug.xcconfig
+  * Remove the include to "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig" in your macos/Flutter/Flutter-Release.xcconfig
+
+Removing CocoaPods integration will improve the project's build time.
+
